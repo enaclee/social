@@ -279,7 +279,8 @@ footer a {
 #status-badge {
   position: fixed;
   top: 16px;
-  right: 18px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -517,10 +518,10 @@ function toggleStatusMessage() {
     return;
   }
 
-  // Позиционируем под бейджем по центру
+  // Позиционируем под бейджем по центру экрана
   const rect = badge.getBoundingClientRect();
   msg.style.top = (rect.bottom + 8) + 'px';
-  msg.style.left = (rect.left + rect.width / 2) + 'px';
+  msg.style.left = '50%';
   msg.textContent = '';
   msg.classList.add('visible');
   statusMsgOpen = true;
