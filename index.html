@@ -221,15 +221,29 @@ video#mainVideo {
 
 /* Кнопка паузы */
 #pause-button {
-  font-size: 38px;
-  color: black;
-  text-shadow: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(180,151,255,0.4);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  margin-bottom: 24px;
-  animation: none;
   z-index: 2;
-  user-select: none;
-  text-align: center;
+  box-shadow: 0 0 10px rgba(180,151,255,0.3), 0 0 24px rgba(180,151,255,0.1);
+  transition: box-shadow 0.3s ease, transform 0.15s ease;
+  color: #B497FF;
+  font-size: 16px;
+}
+#pause-button:hover {
+  box-shadow: 0 0 16px rgba(180,151,255,0.6), 0 0 36px rgba(180,151,255,0.2);
+  transform: scale(1.08);
+}
+#pause-button:active {
+  transform: scale(0.95);
 }
 #pause-button:focus {
   outline: none;
@@ -253,6 +267,30 @@ footer a {
   color: #B497FF;
 }
 
+/* Статус online/offline */
+#status-badge {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 5px 12px 5px 9px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 /* Статус — сообщение при клике */
 #status-message {
   position: fixed;
@@ -271,28 +309,24 @@ footer a {
   pointer-events: none;
   transition: opacity 0.3s ease;
   transform: translateX(-50%);
+  max-width: 90vw;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 #status-message.visible {
   opacity: 1;
 }
 
-/* Статус online/offline */
-#status-badge {
-  position: fixed;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(0,0,0,0.45);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px;
-  padding: 5px 12px 5px 9px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  cursor: pointer;
+@media (max-width: 480px) {
+  #status-message {
+    font-size: 11px;
+    padding: 7px 12px;
+  }
+  #status-badge {
+    top: 12px;
+  }
 }
 #status-dot {
   width: 9px;
@@ -365,7 +399,7 @@ footer a {
     <a href="https://twitch.tv/enaclee" target="_blank"><i class="fab fa-twitch"></i> Twitch</a>
   </div>
 
-  <div id="pause-button" onclick="togglePlayback()">×</div>
+  <div id="pause-button" onclick="togglePlayback()"><i id="pause-icon" class="fas fa-pause"></i></div>
   <footer>© 2023 - 2028 Все права защищены — Контент защищён авторским правом.<br>Создатель 🖤 <a href="https://vk.com/sergeileonov" target="_blank">@sergeileonov</a></footer>
 </div>
 
@@ -463,16 +497,16 @@ function startSite(e) {
 
 function togglePlayback() {
   const video = document.getElementById('mainVideo');
-  const pauseBtn = document.getElementById('pause-button');
+  const icon = document.getElementById('pause-icon');
   const glitch = document.getElementById('glitch');
 
   if (video.paused) {
     video.play();
-    pauseBtn.textContent = '×';
+    icon.className = 'fas fa-pause';
     glitch.style.animationPlayState = 'running';
   } else {
     video.pause();
-    pauseBtn.textContent = '>';
+    icon.className = 'fas fa-play';
     glitch.style.animationPlayState = 'paused';
   }
 }
