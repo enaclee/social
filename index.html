@@ -12,7 +12,7 @@ html, body {
   height: 100%;
   background: black;
   font-family: 'Arial Black', sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
   user-select: none;
 }
 
@@ -59,6 +59,43 @@ html, body {
   color: white;
   text-shadow: 0 0 10px white, 0 0 30px #ccc;
   animation: flicker 1.5s infinite alternate;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+#start-screen h1:active {
+  transform: scale(0.92);
+}
+
+/* Канвас для частиц */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  display: none;
+}
+
+/* Оверлей плавного перехода */
+#transition-overlay {
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 9997;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+/* Плавное появление bio */
+#video-section {
+  opacity: 0;
+}
+#video-section.fade-in {
+  animation: fadeInBio 0.8s ease forwards;
+}
+@keyframes fadeInBio {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Видео и блок */
@@ -214,13 +251,96 @@ footer a {
   text-decoration: none;
   color: #B497FF;
 }
+
+/* Статус — сообщение при клике */
+#status-message {
+  position: fixed;
+  z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 8px 14px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-family: 'Arial', sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  transform: translateX(-50%);
+}
+#status-message.visible {
+  opacity: 1;
+}
+
+/* Статус online/offline */
+#status-badge {
+  position: fixed;
+  top: 16px;
+  right: 18px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 5px 12px 5px 9px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+#status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+#status-dot.online {
+  background: #3dff7a;
+  box-shadow: 0 0 6px #3dff7a, 0 0 14px #3dff7a;
+  animation: pulse-green 2s ease-in-out infinite;
+}
+#status-dot.offline {
+  background: #ff4444;
+  box-shadow: 0 0 6px #ff4444, 0 0 14px #ff4444;
+  animation: pulse-red 2s ease-in-out infinite;
+}
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 5px #3dff7a, 0 0 12px #3dff7a; }
+  50%       { box-shadow: 0 0 10px #3dff7a, 0 0 24px #3dff7a; }
+}
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 5px #ff4444, 0 0 12px #ff4444; }
+  50%       { box-shadow: 0 0 10px #ff4444, 0 0 24px #ff4444; }
+}
+#status-text {
+  font-size: 12px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: white;
+}
 </style>
 </head>
 <body>
-<div id="loader"><span id="loading-text">Загрузка</span></div>
+<div id="loader">
+  <span id="loading-text">Загрузка</span>
+</div>
+
+<div id="status-badge" onclick="toggleStatusMessage()">
+  <div id="status-dot"></div>
+  <span id="status-text"></span>
+</div>
+<div id="status-message"></div>
+
+<canvas id="particle-canvas"></canvas>
+<div id="transition-overlay"></div>
 
 <div id="start-screen">
-  <h1 onclick="startSite()">ТЫК</h1>
+  <h1 onclick="startSite(event)">ТЫК</h1>
 </div>
 
 <div id="video-section">
@@ -248,8 +368,6 @@ footer a {
 </div>
 
 <script>
-let isPlaying = false;
-
 window.addEventListener("load", () => {
   setTimeout(() => {
     document.getElementById('loader').remove();
@@ -257,32 +375,103 @@ window.addEventListener("load", () => {
   }, 3000);
 });
 
-function startSite() {
+function startSite(e) {
   const startScreen = document.getElementById('start-screen');
   const videoSection = document.getElementById('video-section');
   const video = document.getElementById('mainVideo');
   const footer = document.querySelector('footer');
+  const canvas = document.getElementById('particle-canvas');
+  const overlay = document.getElementById('transition-overlay');
+  const ctx = canvas.getContext('2d');
 
-  startScreen.style.display = "none";
-  videoSection.style.display = "flex";
-  footer.style.display = "block";
+  // Размер канваса
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
 
-  video.play().then(() => {
-    console.log("▶️ Воспроизведение");
-    isPlaying = true;
-  }).catch(err => console.error("⚠️ Ошибка воспроизведения:", err));
+  // Координаты клика
+  const cx = e ? e.clientX : window.innerWidth / 2;
+  const cy = e ? e.clientY : window.innerHeight / 2;
+
+  // Создаём частицы
+  const particles = [];
+  const colors = ['#ffffff', '#B497FF', '#d4baff', '#cccccc', '#9966ff', '#eeeeee'];
+  for (let i = 0; i < 120; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 3 + Math.random() * 9;
+    const size = 2 + Math.random() * 5;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      decay: 0.018 + Math.random() * 0.022,
+      gravity: 0.18 + Math.random() * 0.12
+    });
+  }
+
+  // Анимация частиц
+  let frame = 0;
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    for (const p of particles) {
+      if (p.alpha <= 0) continue;
+      alive = true;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.vx *= 0.97;
+      p.alpha -= p.decay;
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    frame++;
+    // Через 18 кадров начинаем fade overlay
+    if (frame === 18) {
+      overlay.style.opacity = '1';
+    }
+    if (alive && frame < 80) {
+      requestAnimationFrame(animateParticles);
+    } else {
+      // Показываем bio
+      canvas.style.display = 'none';
+      startScreen.style.display = 'none';
+      videoSection.style.display = 'flex';
+      videoSection.classList.add('fade-in');
+      footer.style.display = 'block';
+      video.play().catch(err => console.error("⚠️ Ошибка воспроизведения:", err));
+
+      // Убираем overlay
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+      }, 100);
+    }
+  }
+
+  animateParticles();
 }
 
 function togglePlayback() {
   const video = document.getElementById('mainVideo');
   const pauseBtn = document.getElementById('pause-button');
+  const glitch = document.getElementById('glitch');
 
   if (video.paused) {
     video.play();
     pauseBtn.textContent = '×';
+    glitch.style.animationPlayState = 'running';
   } else {
     video.pause();
     pauseBtn.textContent = '>';
+    glitch.style.animationPlayState = 'paused';
   }
 }
 
@@ -292,6 +481,65 @@ setInterval(() => {
   dots = (dots + 1) % 4;
   loadingText.textContent = 'Загрузка' + '.'.repeat(dots);
 }, 500);
+
+// ======= СТАТУС ONLINE/OFFLINE =======
+function updateStatus() {
+  const hour = new Date().getHours();
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  if (hour >= 8 && hour < 22) {
+    dot.className = 'online';
+    text.textContent = 'online';
+    text.style.textTransform = 'none';
+  } else {
+    dot.className = 'offline';
+    text.textContent = 'offline';
+    text.style.textTransform = 'none';
+  }
+}
+updateStatus();
+setInterval(updateStatus, 60000);
+
+// ======= СООБЩЕНИЕ ПРИ КЛИКЕ НА СТАТУС =======
+let statusMsgOpen = false;
+let typewriterTimer = null;
+
+function toggleStatusMessage() {
+  const badge = document.getElementById('status-badge');
+  const msg = document.getElementById('status-message');
+  const hour = new Date().getHours();
+  const isOnline = hour >= 8 && hour < 22;
+
+  if (statusMsgOpen) {
+    msg.classList.remove('visible');
+    statusMsgOpen = false;
+    if (typewriterTimer) clearTimeout(typewriterTimer);
+    return;
+  }
+
+  // Позиционируем под бейджем по центру
+  const rect = badge.getBoundingClientRect();
+  msg.style.top = (rect.bottom + 8) + 'px';
+  msg.style.left = (rect.left + rect.width / 2) + 'px';
+  msg.textContent = '';
+  msg.classList.add('visible');
+  statusMsgOpen = true;
+
+  const text = isOnline
+    ? 'Утречко. Оно не неправильное. Оно просто есть'
+    : 'Скорее всего, сплю. Но могу и не спать. А, неважно';
+
+  let i = 0;
+  function typeNext() {
+    if (i < text.length) {
+      msg.textContent += text[i];
+      i++;
+      typewriterTimer = setTimeout(typeNext, 38 + Math.random() * 30);
+    }
+  }
+  typeNext();
+}
+
 </script>
 </body>
 </html>
