@@ -162,6 +162,10 @@ video#mainVideo {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
 }
 @keyframes swing {
   0%   { transform: rotate(-5deg); }
@@ -219,6 +223,12 @@ video#mainVideo {
   background: rgba(255,255,255,0.1);
 }
 
+/* Убираем синий highlight со всех ссылок и кликабельных элементов */
+a, button, div[onclick] {
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
+}
+
 /* Кнопка паузы */
 #pause-button {
   width: 44px;
@@ -237,6 +247,11 @@ video#mainVideo {
   transition: box-shadow 0.3s ease, transform 0.15s ease;
   color: #B497FF;
   font-size: 16px;
+  margin-bottom: 20px;
+  margin-top: 6px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 #pause-button:hover {
   box-shadow: 0 0 16px rgba(180,151,255,0.6), 0 0 36px rgba(180,151,255,0.2);
@@ -251,7 +266,7 @@ video#mainVideo {
 
 /* Футер */
 footer {
-  display: none; /* скрыт до старта видео */
+  display: none;
   position: absolute;
   bottom: 20px;
   width: 100%;
@@ -387,7 +402,7 @@ footer a {
   <div id="glitch"></div>
 
   <div id="avatar">
-    <img src="Picsart_25-07-06_12-49-19-291.png" alt="avatar">
+    <img src="Picsart_25-07-06_12-49-19-291.png" alt="avatar" draggable="false" oncontextmenu="return false;">
   </div>
   <div id="username">𓆩enaclee𓆪</div>
   <div class="social-box">
