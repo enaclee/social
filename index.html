@@ -11,34 +11,39 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink: #1a1a1a;
-      --bg: #f5f4f0;
-      --border: #222;
+      --white: #ffffff;
       --mono: 'Share Tech Mono', 'Courier New', monospace;
     }
 
     html { scroll-behavior: smooth; }
 
+    /* ── ФИКСИРОВАННЫЙ ФОН (не двигается при скролле) ── */
     body {
       font-family: var(--mono);
-      color: var(--ink);
-      background: var(--bg) url('fon.png') center center / cover fixed;
+      color: var(--white);
+      background: #111;
       min-height: 100vh;
       letter-spacing: 0.04em;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('fon.png') center center / cover no-repeat;
+      z-index: -1;
     }
 
     /* ── NAV ── */
     nav {
       display: flex;
       justify-content: center;
-      gap: clamp(16px, 4vw, 60px);
+      gap: clamp(14px, 4vw, 56px);
       padding: 28px 24px 0;
       position: relative;
     }
 
-    .nav-item {
-      position: relative;
-    }
+    .nav-item { position: relative; }
 
     .nav-item a {
       font-family: var(--mono);
@@ -46,7 +51,7 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
       text-decoration: none;
-      color: var(--ink);
+      color: var(--white);
       position: relative;
       padding-bottom: 4px;
       transition: opacity 0.2s;
@@ -58,16 +63,15 @@
       position: absolute;
       bottom: 0; left: 0;
       width: 0; height: 1.5px;
-      background: var(--ink);
+      background: var(--white);
       transition: width 0.25s ease;
     }
 
-    .nav-item.active > a::after,
     .nav-item:first-child > a::after { width: 100%; }
     .nav-item a:hover::after { width: 100%; }
     .nav-item a:hover { opacity: 0.6; }
 
-    /* "на доработке" tooltip */
+    /* ── "на доработке" тултип ── */
     .wip-tooltip {
       display: none;
       position: absolute;
@@ -77,10 +81,10 @@
       font-family: var(--mono);
       font-size: 0.65rem;
       letter-spacing: 0.12em;
-      color: var(--ink);
+      color: var(--white);
       white-space: nowrap;
-      background: rgba(245,244,240,0.92);
-      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.78);
+      border: 1px solid rgba(255,255,255,0.35);
       padding: 4px 10px;
       opacity: 0;
       pointer-events: none;
@@ -88,10 +92,7 @@
       z-index: 100;
     }
 
-    .wip-tooltip.show {
-      display: block;
-      opacity: 1;
-    }
+    .wip-tooltip.show { display: block; opacity: 1; }
 
     /* ── HERO ── */
     .hero {
@@ -102,9 +103,7 @@
       padding-bottom: 20px;
     }
 
-    .avatar-wrap {
-      margin-bottom: 20px;
-    }
+    .avatar-wrap { margin-bottom: 20px; }
 
     .avatar-wrap img {
       display: block;
@@ -119,6 +118,7 @@
       letter-spacing: 0.08em;
       line-height: 1;
       margin-bottom: 10px;
+      color: var(--white);
     }
 
     .handle {
@@ -126,97 +126,84 @@
       font-size: 0.92rem;
       letter-spacing: 0.22em;
       margin-bottom: 20px;
-      opacity: 0.72;
+      color: rgba(255,255,255,0.80);
     }
 
+    /* ── TAGLINE белый ── */
     .tagline {
       font-family: var(--mono);
       font-size: 0.82rem;
       letter-spacing: 0.1em;
-      opacity: 0.6;
+      color: var(--white);
       margin-bottom: 44px;
     }
 
-    /* ── SOCIAL BUTTONS ── */
+    /* ── КНОПКИ СОЦСЕТЕЙ: прозрачные, белая рамка, белые иконки, в линию ── */
     .socials {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;          /* ОДНА ЛИНИЯ */
       justify-content: center;
       gap: 10px;
       margin-bottom: 52px;
       padding: 0 16px;
+      overflow-x: auto;           /* скролл если не влезут на маленьком экране */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
+    .socials::-webkit-scrollbar { display: none; }
 
     .btn-social {
       display: inline-flex;
       align-items: center;
-      gap: 9px;
-      border: 1.5px solid var(--border);
-      padding: 9px 18px 9px 14px;
+      gap: 8px;
+      border: 1.5px solid var(--white);
+      padding: 9px 16px 9px 13px;
       font-family: var(--mono);
-      font-size: 0.80rem;
+      font-size: 0.78rem;
       letter-spacing: 0.1em;
       text-decoration: none;
-      color: var(--ink);
-      background: rgba(245,244,240,0.75);
-      backdrop-filter: blur(4px);
+      color: var(--white);
+      background: transparent;       /* прозрачный фон */
       transition: background 0.2s, transform 0.15s;
       cursor: pointer;
-      min-width: 148px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .btn-social:hover {
-      background: rgba(210,208,200,0.9);
+      background: rgba(255,255,255,0.12);
       transform: translateY(-1px);
     }
 
-    /* icon wrapper — plain icon (Telegram, Pinterest) */
+    /* иконка — белый svg */
     .btn-social .ico {
-      width: 18px; height: 18px;
+      width: 17px; height: 17px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
 
     .btn-social .ico svg {
-      width: 18px; height: 18px;
-      fill: var(--ink);
+      width: 17px; height: 17px;
+      fill: var(--white);
     }
 
-    /* icon wrapper — dark circle background (VK, Discord) */
-    .btn-social .ico-circle {
-      width: 20px; height: 20px;
-      flex-shrink: 0;
-      border-radius: 50%;
-      background: var(--ink);
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .btn-social .ico-circle svg {
-      width: 12px; height: 12px;
-      fill: #f5f4f0;
-    }
-
-    /* ── ARROW TOGGLE ── */
+    /* ── СТРЕЛКА — белая ── */
     .toggle-arrow {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1.4rem;
-      color: var(--ink);
+      font-size: 1.5rem;
+      color: var(--white);
       padding: 6px 12px;
       display: block;
       margin: 0 auto 40px;
       transition: transform 0.35s ease;
       line-height: 1;
-      opacity: 0.7;
     }
 
-    .toggle-arrow.open {
-      transform: rotate(180deg);
-      opacity: 1;
-    }
+    .toggle-arrow.open { transform: rotate(180deg); }
 
-    /* ── ABOUT CARD ── */
+    /* ── КАРТОЧКА ABOUT: тёмный фон, белый текст ── */
     .about-wrap {
       display: flex;
       justify-content: center;
@@ -228,39 +215,36 @@
       width: 100%;
     }
 
-    .about-wrap.open {
-      max-height: 460px;
-      opacity: 1;
-    }
+    .about-wrap.open { max-height: 460px; opacity: 1; }
 
     .about-card {
       position: relative;
       max-width: 520px;
       width: 100%;
       padding: 30px 36px 34px;
-      background: rgba(248,247,243,0.88);
-      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.72);   /* тёмный фон */
+      backdrop-filter: blur(8px);
+      color: var(--white);
     }
 
-    /* straight border */
     .about-card::before {
       content: '';
       position: absolute;
       inset: 0;
-      border: 1.5px solid var(--border);
+      border: 1.5px solid rgba(255,255,255,0.5);
       pointer-events: none;
     }
 
-    /* corner flourishes */
+    /* угловые засечки — белые */
     .about-card::after {
       content: '';
       position: absolute;
       inset: -7px;
       background:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M3 3 Q10 6 17 3 M3 3 Q6 10 3 17' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") left top no-repeat,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M61 3 Q54 6 47 3 M61 3 Q58 10 61 17' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") right top no-repeat,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M3 61 Q10 58 17 61 M3 61 Q6 54 3 47' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") left bottom no-repeat,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M61 61 Q54 58 47 61 M61 61 Q58 54 61 47' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") right bottom no-repeat;
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M3 3 Q10 6 17 3 M3 3 Q6 10 3 17' stroke='%23ffffff' stroke-width='1.2' fill='none' opacity='0.6'/%3E%3C/svg%3E") left top no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M61 3 Q54 6 47 3 M61 3 Q58 10 61 17' stroke='%23ffffff' stroke-width='1.2' fill='none' opacity='0.6'/%3E%3C/svg%3E") right top no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M3 61 Q10 58 17 61 M3 61 Q6 54 3 47' stroke='%23ffffff' stroke-width='1.2' fill='none' opacity='0.6'/%3E%3C/svg%3E") left bottom no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M61 61 Q54 58 47 61 M61 61 Q58 54 61 47' stroke='%23ffffff' stroke-width='1.2' fill='none' opacity='0.6'/%3E%3C/svg%3E") right bottom no-repeat;
       pointer-events: none;
     }
 
@@ -272,8 +256,8 @@
       font-family: var(--mono);
       font-size: 1.1rem;
       cursor: pointer;
-      color: var(--ink);
-      opacity: 0.5;
+      color: var(--white);
+      opacity: 0.6;
       transition: opacity 0.2s;
       line-height: 1;
     }
@@ -286,20 +270,20 @@
       letter-spacing: 0.28em;
       text-transform: uppercase;
       margin-bottom: 9px;
+      color: var(--white);
     }
 
     .about-card .line {
       width: 36px; height: 1.5px;
-      background: var(--ink);
+      background: rgba(255,255,255,0.5);
       margin-bottom: 20px;
-      opacity: 0.55;
     }
 
     .about-card p {
       font-family: var(--mono);
       font-size: 0.82rem;
       line-height: 1.8;
-      opacity: 0.78;
+      color: rgba(255,255,255,0.88);
       margin-bottom: 12px;
     }
 
@@ -317,26 +301,26 @@
       letter-spacing: 0.3em;
       text-transform: uppercase;
       margin-bottom: 10px;
+      color: var(--white);
     }
 
     .contact .line {
       width: 36px; height: 1.5px;
-      background: var(--ink);
+      background: rgba(255,255,255,0.5);
       margin: 0 auto 18px;
-      opacity: 0.55;
     }
 
     .contact a {
       font-family: var(--mono);
       font-size: 0.83rem;
       letter-spacing: 0.1em;
-      color: var(--ink);
+      color: var(--white);
       text-decoration: none;
-      border-bottom: 1px dashed var(--ink);
+      border-bottom: 1px dashed rgba(255,255,255,0.6);
       transition: opacity 0.2s;
     }
 
-    .contact a:hover { opacity: 0.5; }
+    .contact a:hover { opacity: 0.55; }
 
     /* ── FOOTER ── */
     footer {
@@ -345,7 +329,7 @@
       font-family: var(--mono);
       font-size: 0.70rem;
       letter-spacing: 0.18em;
-      opacity: 0.5;
+      color: rgba(255,255,255,0.5);
       line-height: 2;
     }
   </style>
@@ -385,32 +369,32 @@
     <p class="handle">+enaclee+</p>
     <p class="tagline">digital ghost // creator // developer</p>
 
-    <!-- SOCIAL BUTTONS -->
+    <!-- СОЦСЕТИ — прозрачные кнопки, белые иконки и рамки, В ЛИНИЮ -->
     <div class="socials">
 
-      <!-- Telegram – plain icon -->
+      <!-- Telegram -->
       <a class="btn-social" href="https://t.me/enaclee" target="_blank" rel="noopener">
         <span class="ico">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2.01 12.01 20.1 4.9a.5.5 0 0 1 .65.65L14.5 22.5a.5.5 0 0 1-.93.05l-2.92-6.44a.5.5 0 0 0-.26-.26L4.07 13a.5.5 0 0 1 .06-.93z M10.5 16.1l1.4 3.3 5.3-14.2z M10.5 16.1l-1.6-3.8 8.4-7.1z"/>
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
           </svg>
         </span>
         Telegram
       </a>
 
-      <!-- VKontakte – dark circle icon -->
+      <!-- Vkontakte -->
       <a class="btn-social" href="https://vk.com/sergeileonov" target="_blank" rel="noopener">
-        <span class="ico-circle">
+        <span class="ico">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14C20.67 22 22 20.67 22 15.07V8.93C22 3.33 20.67 2 15.07 2zm2.45 13.5h-1.3c-.49 0-.64-.39-1.53-1.28-.77-.74-1.11-.84-1.3-.84-.27 0-.34.08-.34.44v1.16c0 .31-.1.5-.93.5-1.38 0-2.91-.83-3.98-2.38C7.05 11.35 6.6 9.88 6.6 9.55c0-.19.08-.37.44-.37h1.3c.33 0 .46.15.58.5.64 1.86 1.72 3.49 2.16 3.49.16 0 .24-.08.24-.49V10.9c-.05-.88-.52-.96-.52-1.27 0-.15.13-.3.33-.3h2.05c.28 0 .38.15.38.48v2.59c0 .28.13.38.2.38.16 0 .3-.1.6-.4.94-1.05 1.6-2.67 1.6-2.67.09-.19.24-.37.57-.37h1.3c.39 0 .48.2.39.48-.16.76-1.75 3.01-1.75 3.01-.14.23-.19.33 0 .58.14.19.59.58.9.94.55.63.98 1.16 1.09 1.53.13.36-.06.53-.45.53z"/>
+            <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.862-.525-2.046-1.712-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.558c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C5.1 11.366 4.5 9.402 4.5 8.96c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.677.864 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V10.17c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.253-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.762-.491h1.744c.525 0 .643.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.049.17.474-.085.712-.609.712z"/>
           </svg>
         </span>
         Vkontakte
       </a>
 
-      <!-- Discord – dark circle icon -->
+      <!-- Discord -->
       <a class="btn-social" href="https://discord.com/users/enaclee" target="_blank" rel="noopener">
-        <span class="ico-circle">
+        <span class="ico">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.101 18.08.114 18.1.131 18.11a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
           </svg>
@@ -418,7 +402,7 @@
         Discord
       </a>
 
-      <!-- Pinterest – plain icon -->
+      <!-- Pinterest -->
       <a class="btn-social" href="https://pinterest.com/enaclee" target="_blank" rel="noopener">
         <span class="ico">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -429,10 +413,10 @@
       </a>
     </div>
 
-    <!-- ARROW TOGGLE -->
+    <!-- СТРЕЛКА — белая -->
     <button class="toggle-arrow" id="toggleBtn" aria-label="Toggle about">&#8964;</button>
 
-    <!-- ABOUT CARD -->
+    <!-- КАРТОЧКА ABOUT — тёмный фон, белый текст -->
     <div class="about-wrap" id="aboutWrap">
       <div class="about-card">
         <button class="about-close" id="closeBtn" aria-label="Close">&#215;</button>
@@ -482,7 +466,6 @@
 
       link.addEventListener('click', e => {
         e.preventDefault();
-        // hide all others first
         wipIds.forEach(other => {
           if (other !== id) document.getElementById(`tip-${other}`).classList.remove('show');
         });
@@ -494,7 +477,6 @@
       });
     });
 
-    // close WIP tips when clicking elsewhere
     document.addEventListener('click', e => {
       if (!e.target.classList.contains('wip-link')) {
         wipIds.forEach(id => document.getElementById(`tip-${id}`).classList.remove('show'));
