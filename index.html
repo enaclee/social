@@ -1,596 +1,506 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>enalcee</title>
-<script src="https://kit.fontawesome.com/b617dc6679.js" crossorigin="anonymous"></script>
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: black;
-  font-family: 'Arial Black', sans-serif;
-  overflow-x: hidden;
-  user-select: none;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⸸enaclee⸸</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Yuji+Syuku&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Загрузка */
-#loader {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-#loader span {
-  font-size: 32px;
-  color: white;
-  text-shadow: 0 0 10px white, 0 0 30px #ccc;
-  animation: flicker 1.2s infinite alternate;
-}
-@keyframes flicker {
-  0% { opacity: 0.8; text-shadow: 0 0 6px white; }
-  100% { opacity: 1; text-shadow: 0 0 14px white, 0 0 26px #ccc; }
-}
+    :root {
+      --ink: #1a1a1a;
+      --bg: #f5f4f0;
+      --border: #222;
+      --mono: 'Share Tech Mono', 'Courier New', monospace;
+    }
 
-/* Стартовый экран */
-#start-screen {
-  opacity: 0.6;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  background: url('Picsart_25-07-06_12-49-05-878.jpg') center center no-repeat;
-  background-size: 300%;
-  animation: moveBG 40s ease-in-out infinite alternate;
-  flex-direction: column;
-  cursor: default;
-}
-@keyframes moveBG {
-  0% { background-position: center center; }
-  100% { background-position: 52% 48%; }
-}
-#start-screen h1 {
-  font-size: 64px;
-  color: white;
-  text-shadow: 0 0 10px white, 0 0 30px #ccc;
-  animation: flicker 1.5s infinite alternate;
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-#start-screen h1:active {
-  transform: scale(0.92);
-}
+    html { scroll-behavior: smooth; }
 
-/* Канвас для частиц */
-#particle-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  pointer-events: none;
-  display: none;
-}
+    body {
+      font-family: var(--mono);
+      color: var(--ink);
+      background: var(--bg) url('fon.png') center center / cover fixed;
+      min-height: 100vh;
+      letter-spacing: 0.04em;
+    }
 
-/* Оверлей плавного перехода */
-#transition-overlay {
-  position: fixed;
-  inset: 0;
-  background: black;
-  z-index: 9997;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-}
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: clamp(16px, 4vw, 60px);
+      padding: 28px 24px 0;
+      position: relative;
+    }
 
-/* Плавное появление bio */
-#video-section {
-  opacity: 0;
-}
-#video-section.fade-in {
-  animation: fadeInBio 0.8s ease forwards;
-}
-@keyframes fadeInBio {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+    .nav-item {
+      position: relative;
+    }
 
-/* Видео и блок */
-#video-section {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 100%;
-  position: relative;
-}
-video#mainVideo {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: 0;
-  background: black;
-  pointer-events: none;
-}
+    .nav-item a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink);
+      position: relative;
+      padding-bottom: 4px;
+      transition: opacity 0.2s;
+      display: inline-block;
+    }
 
-/* Эффект сломанного ТВ */
-#glitch {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 1;
-  background: rgba(255,255,255,0.03);
-  animation: glitchEffect 0.1s infinite;
-}
-@keyframes glitchEffect {
-  0%   { opacity: 0.02; transform: translate(0,0); }
-  10%  { opacity: 0.05; transform: translate(-2px,1px); }
-  20%  { opacity: 0.03; transform: translate(1px,-1px); }
-  30%  { opacity: 0.06; transform: translate(-1px,2px); }
-  40%  { opacity: 0.04; transform: translate(2px,-2px); }
-  50%  { opacity: 0.05; transform: translate(0,1px); }
-  60%  { opacity: 0.03; transform: translate(-2px,0); }
-  70%  { opacity: 0.06; transform: translate(1px,1px); }
-  80%  { opacity: 0.04; transform: translate(-1px,-1px); }
-  90%  { opacity: 0.05; transform: translate(2px,0); }
-  100% { opacity: 0.03; transform: translate(0,0); }
-}
+    .nav-item a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--ink);
+      transition: width 0.25s ease;
+    }
 
-/* Аватар с покачиванием */
-#avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-bottom: 16px;
-  box-shadow: 0 0 12px white;
-  position: relative;
-  z-index: 2;
-  animation: swing 4s ease-in-out infinite alternate;
-}
-#avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  pointer-events: none;
-  -webkit-user-drag: none;
-  user-drag: none;
-  -webkit-touch-callout: none;
-}
-@keyframes swing {
-  0%   { transform: rotate(-5deg); }
-  50%  { transform: rotate(5deg); }
-  100% { transform: rotate(-5deg); }
-}
+    .nav-item.active > a::after,
+    .nav-item:first-child > a::after { width: 100%; }
+    .nav-item a:hover::after { width: 100%; }
+    .nav-item a:hover { opacity: 0.6; }
 
-/* Ник */
-#username {
-  font-size: 36px;
-  color: #B497FF;
-  text-shadow: 0 0 10px #B497FF, 0 0 20px #B497FF;
-  animation: float 3s ease-in-out infinite alternate;
-  margin-bottom: 16px;
-  font-weight: bold;
-  will-change: transform;
-  z-index: 2;
-}
-@keyframes float {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(10px); }
-}
+    /* "на доработке" tooltip */
+    .wip-tooltip {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--ink);
+      white-space: nowrap;
+      background: rgba(245,244,240,0.92);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 100;
+    }
 
-/* Соцсети */
-.social-box {
-  margin-top: 40px;
-  margin-bottom: 30px;
-  padding: 10px 25px;
-  max-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.03);
-  box-shadow: 0 0 6px white, 0 0 12px #ccc;
-  z-index: 2;
-}
-.social-box a {
-  font-size: 18px;
-  color: #B497FF;
-  text-decoration: none;
-  padding: 6px 14px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.03);
-  transition: background 0.3s ease;
-  display: flex;
-  align-items: center;
-}
-.social-box a i {
-  margin-right: 8px;
-}
-.social-box a:hover {
-  background: rgba(255,255,255,0.1);
-}
+    .wip-tooltip.show {
+      display: block;
+      opacity: 1;
+    }
 
-/* Убираем синий highlight со всех ссылок и кликабельных элементов */
-a, button, div[onclick] {
-  -webkit-tap-highlight-color: transparent;
-  tap-highlight-color: transparent;
-}
+    /* ── HERO ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: clamp(50px, 9vw, 120px);
+      padding-bottom: 20px;
+    }
 
-/* Кнопка паузы */
-#pause-button {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid rgba(180,151,255,0.4);
-  background: rgba(0,0,0,0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  box-shadow: 0 0 10px rgba(180,151,255,0.3), 0 0 24px rgba(180,151,255,0.1);
-  transition: box-shadow 0.3s ease, transform 0.15s ease;
-  color: #B497FF;
-  font-size: 16px;
-  margin-bottom: 20px;
-  margin-top: 6px;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-#pause-button:hover {
-  box-shadow: 0 0 16px rgba(180,151,255,0.6), 0 0 36px rgba(180,151,255,0.2);
-  transform: scale(1.08);
-}
-#pause-button:active {
-  transform: scale(0.95);
-}
-#pause-button:focus {
-  outline: none;
-}
+    .avatar-wrap {
+      margin-bottom: 20px;
+    }
 
-/* Футер */
-footer {
-  display: none;
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
-  color: black;
-  font-weight: bold;
-  text-shadow: none;
-  z-index: 2;
-}
-footer a {
-  text-decoration: none;
-  color: #B497FF;
-}
+    .avatar-wrap img {
+      display: block;
+      max-width: 120px;
+      height: auto;
+    }
 
-/* Статус online/offline */
-#status-badge {
-  position: fixed;
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: rgba(0,0,0,0.45);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 20px;
-  padding: 5px 12px 5px 9px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  tap-highlight-color: transparent;
-  outline: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
+    .jp-title {
+      font-family: 'Yuji Syuku', serif;
+      font-size: clamp(2.6rem, 8vw, 4.2rem);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
 
-/* Статус — сообщение при клике */
-#status-message {
-  position: fixed;
-  z-index: 9999;
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 8px 14px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  font-family: 'Arial', sans-serif;
-  font-size: 12px;
-  color: rgba(255,255,255,0.85);
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  transform: translateX(-50%);
-  max-width: 90vw;
-  white-space: normal;
-  text-align: center;
-  line-height: 1.5;
-  box-sizing: border-box;
-}
-#status-message.visible {
-  opacity: 1;
-}
+    .handle {
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      letter-spacing: 0.22em;
+      margin-bottom: 20px;
+      opacity: 0.72;
+    }
 
-@media (max-width: 480px) {
-  #status-message {
-    font-size: 11px;
-    padding: 7px 12px;
-  }
-  #status-badge {
-    top: 12px;
-  }
-}
-#status-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-#status-dot.online {
-  background: #3dff7a;
-  box-shadow: 0 0 6px #3dff7a, 0 0 14px #3dff7a;
-  animation: pulse-green 2s ease-in-out infinite;
-}
-#status-dot.offline {
-  background: #ff4444;
-  box-shadow: 0 0 6px #ff4444, 0 0 14px #ff4444;
-  animation: pulse-red 2s ease-in-out infinite;
-}
-@keyframes pulse-green {
-  0%, 100% { box-shadow: 0 0 5px #3dff7a, 0 0 12px #3dff7a; }
-  50%       { box-shadow: 0 0 10px #3dff7a, 0 0 24px #3dff7a; }
-}
-@keyframes pulse-red {
-  0%, 100% { box-shadow: 0 0 5px #ff4444, 0 0 12px #ff4444; }
-  50%       { box-shadow: 0 0 10px #ff4444, 0 0 24px #ff4444; }
-}
-#status-text {
-  font-size: 12px;
-  font-family: 'Arial', sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: white;
-}
-</style>
+    .tagline {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
+      margin-bottom: 44px;
+    }
+
+    /* ── SOCIAL BUTTONS ── */
+    .socials {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 52px;
+      padding: 0 16px;
+    }
+
+    .btn-social {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 1.5px solid var(--border);
+      padding: 9px 18px 9px 14px;
+      font-family: var(--mono);
+      font-size: 0.80rem;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      color: var(--ink);
+      background: rgba(245,244,240,0.75);
+      backdrop-filter: blur(4px);
+      transition: background 0.2s, transform 0.15s;
+      cursor: pointer;
+      min-width: 148px;
+    }
+
+    .btn-social:hover {
+      background: rgba(210,208,200,0.9);
+      transform: translateY(-1px);
+    }
+
+    /* icon wrapper — plain icon (Telegram, Pinterest) */
+    .btn-social .ico {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .btn-social .ico svg {
+      width: 18px; height: 18px;
+      fill: var(--ink);
+    }
+
+    /* icon wrapper — dark circle background (VK, Discord) */
+    .btn-social .ico-circle {
+      width: 20px; height: 20px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .btn-social .ico-circle svg {
+      width: 12px; height: 12px;
+      fill: #f5f4f0;
+    }
+
+    /* ── ARROW TOGGLE ── */
+    .toggle-arrow {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.4rem;
+      color: var(--ink);
+      padding: 6px 12px;
+      display: block;
+      margin: 0 auto 40px;
+      transition: transform 0.35s ease;
+      line-height: 1;
+      opacity: 0.7;
+    }
+
+    .toggle-arrow.open {
+      transform: rotate(180deg);
+      opacity: 1;
+    }
+
+    /* ── ABOUT CARD ── */
+    .about-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 0 20px;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.45s ease, opacity 0.35s ease;
+      width: 100%;
+    }
+
+    .about-wrap.open {
+      max-height: 460px;
+      opacity: 1;
+    }
+
+    .about-card {
+      position: relative;
+      max-width: 520px;
+      width: 100%;
+      padding: 30px 36px 34px;
+      background: rgba(248,247,243,0.88);
+      backdrop-filter: blur(6px);
+    }
+
+    /* straight border */
+    .about-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--border);
+      pointer-events: none;
+    }
+
+    /* corner flourishes */
+    .about-card::after {
+      content: '';
+      position: absolute;
+      inset: -7px;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M3 3 Q10 6 17 3 M3 3 Q6 10 3 17' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") left top no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M61 3 Q54 6 47 3 M61 3 Q58 10 61 17' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") right top no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M3 61 Q10 58 17 61 M3 61 Q6 54 3 47' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") left bottom no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M61 61 Q54 58 47 61 M61 61 Q58 54 61 47' stroke='%231a1a1a' stroke-width='1.2' fill='none' opacity='0.5'/%3E%3C/svg%3E") right bottom no-repeat;
+      pointer-events: none;
+    }
+
+    .about-close {
+      position: absolute;
+      top: 10px; right: 14px;
+      background: none;
+      border: none;
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: var(--ink);
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      line-height: 1;
+    }
+
+    .about-close:hover { opacity: 1; }
+
+    .about-card h2 {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      margin-bottom: 9px;
+    }
+
+    .about-card .line {
+      width: 36px; height: 1.5px;
+      background: var(--ink);
+      margin-bottom: 20px;
+      opacity: 0.55;
+    }
+
+    .about-card p {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.8;
+      opacity: 0.78;
+      margin-bottom: 12px;
+    }
+
+    .about-card p:last-child { margin-bottom: 0; }
+
+    /* ── CONTACT ── */
+    .contact {
+      text-align: center;
+      padding: clamp(60px, 10vw, 110px) 20px 40px;
+    }
+
+    .contact h2 {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .contact .line {
+      width: 36px; height: 1.5px;
+      background: var(--ink);
+      margin: 0 auto 18px;
+      opacity: 0.55;
+    }
+
+    .contact a {
+      font-family: var(--mono);
+      font-size: 0.83rem;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--ink);
+      transition: opacity 0.2s;
+    }
+
+    .contact a:hover { opacity: 0.5; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 28px 20px 34px;
+      font-family: var(--mono);
+      font-size: 0.70rem;
+      letter-spacing: 0.18em;
+      opacity: 0.5;
+      line-height: 2;
+    }
+  </style>
 </head>
 <body>
-<div id="loader">
-  <span id="loading-text">Загрузка</span>
-</div>
 
-<div id="status-badge" onclick="toggleStatusMessage()">
-  <div id="status-dot"></div>
-  <span id="status-text"></span>
-</div>
-<div id="status-message"></div>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-item" id="ni-home">
+      <a href="#">Home</a>
+    </div>
+    <div class="nav-item" id="ni-about">
+      <a href="#" class="wip-link">About</a>
+      <span class="wip-tooltip" id="tip-about">// на доработке</span>
+    </div>
+    <div class="nav-item" id="ni-work">
+      <a href="#" class="wip-link">Work</a>
+      <span class="wip-tooltip" id="tip-work">// на доработке</span>
+    </div>
+    <div class="nav-item" id="ni-gallery">
+      <a href="#" class="wip-link">Gallery</a>
+      <span class="wip-tooltip" id="tip-gallery">// на доработке</span>
+    </div>
+    <div class="nav-item" id="ni-contact">
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
 
-<canvas id="particle-canvas"></canvas>
-<div id="transition-overlay"></div>
+  <!-- HERO -->
+  <main class="hero">
 
-<div id="start-screen">
-  <h1 onclick="startSite(event)">ТЫК</h1>
-</div>
+    <div class="avatar-wrap">
+      <img src="avatar.png" alt="avatar">
+    </div>
 
-<div id="video-section">
-  <video autoplay playsinline id="mainVideo">
-    <source src="lv_0_20250706151148.mp4" type="video/mp4">
-  </video>
+    <h1 class="jp-title">エナクリ</h1>
+    <p class="handle">+enaclee+</p>
+    <p class="tagline">digital ghost // creator // developer</p>
 
-  <div id="glitch"></div>
+    <!-- SOCIAL BUTTONS -->
+    <div class="socials">
 
-  <div id="avatar">
-    <img src="Picsart_25-07-06_12-49-19-291.png" alt="avatar" draggable="false" oncontextmenu="return false;">
-  </div>
-  <div id="username">𓆩enaclee𓆪</div>
-  <div class="social-box">
-    <a href="https://www.faceit.com/en/players/enaclee" target="_blank">⊹ FACEIT</a>
-    <a href="https://discord.gg/cTXAt7Gw" target="_blank"><i class="fab fa-discord"></i> Discord</a>
-    <a href="https://steamcommunity.com/id/enaclee" target="_blank"><i class="fab fa-steam"></i> Steam</a>
-    <a href="https://vk.com/sergeileonov" target="_blank"><i class="fab fa-vk"></i> VK</a>
-    <a href="https://t.me/enaclee" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
-    <a href="https://twitch.tv/enaclee" target="_blank"><i class="fab fa-twitch"></i> Twitch</a>
-  </div>
+      <!-- Telegram – plain icon -->
+      <a class="btn-social" href="https://t.me/enaclee" target="_blank" rel="noopener">
+        <span class="ico">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 12.01 20.1 4.9a.5.5 0 0 1 .65.65L14.5 22.5a.5.5 0 0 1-.93.05l-2.92-6.44a.5.5 0 0 0-.26-.26L4.07 13a.5.5 0 0 1 .06-.93z M10.5 16.1l1.4 3.3 5.3-14.2z M10.5 16.1l-1.6-3.8 8.4-7.1z"/>
+          </svg>
+        </span>
+        Telegram
+      </a>
 
-  <div id="pause-button" onclick="togglePlayback()"><i id="pause-icon" class="fas fa-pause"></i></div>
-  <footer>© 2023 - 2028 Все права защищены — Контент защищён авторским правом.<br>Создатель 🖤 <a href="https://vk.com/sergeileonov" target="_blank">@sergeileonov</a></footer>
-</div>
+      <!-- VKontakte – dark circle icon -->
+      <a class="btn-social" href="https://vk.com/sergeileonov" target="_blank" rel="noopener">
+        <span class="ico-circle">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14C20.67 22 22 20.67 22 15.07V8.93C22 3.33 20.67 2 15.07 2zm2.45 13.5h-1.3c-.49 0-.64-.39-1.53-1.28-.77-.74-1.11-.84-1.3-.84-.27 0-.34.08-.34.44v1.16c0 .31-.1.5-.93.5-1.38 0-2.91-.83-3.98-2.38C7.05 11.35 6.6 9.88 6.6 9.55c0-.19.08-.37.44-.37h1.3c.33 0 .46.15.58.5.64 1.86 1.72 3.49 2.16 3.49.16 0 .24-.08.24-.49V10.9c-.05-.88-.52-.96-.52-1.27 0-.15.13-.3.33-.3h2.05c.28 0 .38.15.38.48v2.59c0 .28.13.38.2.38.16 0 .3-.1.6-.4.94-1.05 1.6-2.67 1.6-2.67.09-.19.24-.37.57-.37h1.3c.39 0 .48.2.39.48-.16.76-1.75 3.01-1.75 3.01-.14.23-.19.33 0 .58.14.19.59.58.9.94.55.63.98 1.16 1.09 1.53.13.36-.06.53-.45.53z"/>
+          </svg>
+        </span>
+        Vkontakte
+      </a>
 
-<script>
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    document.getElementById('loader').remove();
-    document.getElementById('start-screen').style.display = 'flex';
-  }, 3000);
-});
+      <!-- Discord – dark circle icon -->
+      <a class="btn-social" href="https://discord.com/users/enaclee" target="_blank" rel="noopener">
+        <span class="ico-circle">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.101 18.08.114 18.1.131 18.11a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+          </svg>
+        </span>
+        Discord
+      </a>
 
-function startSite(e) {
-  const startScreen = document.getElementById('start-screen');
-  const videoSection = document.getElementById('video-section');
-  const video = document.getElementById('mainVideo');
-  const footer = document.querySelector('footer');
-  const canvas = document.getElementById('particle-canvas');
-  const overlay = document.getElementById('transition-overlay');
-  const ctx = canvas.getContext('2d');
+      <!-- Pinterest – plain icon -->
+      <a class="btn-social" href="https://pinterest.com/enaclee" target="_blank" rel="noopener">
+        <span class="ico">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+          </svg>
+        </span>
+        Pinterest
+      </a>
+    </div>
 
-  // Размер канваса
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.display = 'block';
+    <!-- ARROW TOGGLE -->
+    <button class="toggle-arrow" id="toggleBtn" aria-label="Toggle about">&#8964;</button>
 
-  // Координаты клика
-  const cx = e ? e.clientX : window.innerWidth / 2;
-  const cy = e ? e.clientY : window.innerHeight / 2;
+    <!-- ABOUT CARD -->
+    <div class="about-wrap" id="aboutWrap">
+      <div class="about-card">
+        <button class="about-close" id="closeBtn" aria-label="Close">&#215;</button>
+        <h2>About Me</h2>
+        <div class="line"></div>
+        <p>I create strange things<br>between code and art.</p>
+        <p>Lost in the noise,<br>building something real.</p>
+      </div>
+    </div>
 
-  // Создаём частицы
-  const particles = [];
-  const colors = ['#ffffff', '#B497FF', '#d4baff', '#cccccc', '#9966ff', '#eeeeee'];
-  for (let i = 0; i < 120; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 3 + Math.random() * 9;
-    const size = 2 + Math.random() * 5;
-    particles.push({
-      x: cx, y: cy,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      size,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      alpha: 1,
-      decay: 0.018 + Math.random() * 0.022,
-      gravity: 0.18 + Math.random() * 0.12
+  </main>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <h2>Contact</h2>
+    <div class="line"></div>
+    <a href="mailto:enaclee@gmail.com">enaclee@gmail.com</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>©2026-2027&nbsp;|&nbsp;В с е &nbsp; п р а в а &nbsp; з а щ и щ е н ы .</div>
+    <div>С о з д а т е л ь &nbsp;&#9829;&nbsp;@enaclee</div>
+  </footer>
+
+  <script>
+    /* ── About toggle ── */
+    const toggleBtn = document.getElementById('toggleBtn');
+    const aboutWrap = document.getElementById('aboutWrap');
+    const closeBtn  = document.getElementById('closeBtn');
+
+    function openAbout()  { aboutWrap.classList.add('open');    toggleBtn.classList.add('open'); }
+    function closeAbout() { aboutWrap.classList.remove('open'); toggleBtn.classList.remove('open'); }
+
+    toggleBtn.addEventListener('click', () =>
+      aboutWrap.classList.contains('open') ? closeAbout() : openAbout()
+    );
+    closeBtn.addEventListener('click', closeAbout);
+
+    /* ── WIP nav tooltips ── */
+    const wipIds = ['about','work','gallery'];
+
+    wipIds.forEach(id => {
+      const link = document.querySelector(`#ni-${id} .wip-link`);
+      const tip  = document.getElementById(`tip-${id}`);
+      let timer;
+
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        // hide all others first
+        wipIds.forEach(other => {
+          if (other !== id) document.getElementById(`tip-${other}`).classList.remove('show');
+        });
+        tip.classList.toggle('show');
+        clearTimeout(timer);
+        if (tip.classList.contains('show')) {
+          timer = setTimeout(() => tip.classList.remove('show'), 2200);
+        }
+      });
     });
-  }
 
-  // Анимация частиц
-  let frame = 0;
-  function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    let alive = false;
-    for (const p of particles) {
-      if (p.alpha <= 0) continue;
-      alive = true;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += p.gravity;
-      p.vx *= 0.97;
-      p.alpha -= p.decay;
-      ctx.globalAlpha = Math.max(0, p.alpha);
-      ctx.fillStyle = p.color;
-      ctx.shadowColor = p.color;
-      ctx.shadowBlur = 6;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    frame++;
-    // Через 18 кадров начинаем fade overlay
-    if (frame === 18) {
-      overlay.style.opacity = '1';
-    }
-    if (alive && frame < 80) {
-      requestAnimationFrame(animateParticles);
-    } else {
-      // Показываем bio
-      canvas.style.display = 'none';
-      startScreen.style.display = 'none';
-      videoSection.style.display = 'flex';
-      videoSection.classList.add('fade-in');
-      footer.style.display = 'block';
-      video.play().catch(err => console.error("⚠️ Ошибка воспроизведения:", err));
+    // close WIP tips when clicking elsewhere
+    document.addEventListener('click', e => {
+      if (!e.target.classList.contains('wip-link')) {
+        wipIds.forEach(id => document.getElementById(`tip-${id}`).classList.remove('show'));
+      }
+    });
+  </script>
 
-      // Убираем overlay
-      setTimeout(() => {
-        overlay.style.opacity = '0';
-      }, 100);
-    }
-  }
-
-  animateParticles();
-}
-
-function togglePlayback() {
-  const video = document.getElementById('mainVideo');
-  const icon = document.getElementById('pause-icon');
-  const glitch = document.getElementById('glitch');
-
-  if (video.paused) {
-    video.play();
-    icon.className = 'fas fa-pause';
-    glitch.style.animationPlayState = 'running';
-  } else {
-    video.pause();
-    icon.className = 'fas fa-play';
-    glitch.style.animationPlayState = 'paused';
-  }
-}
-
-const loadingText = document.getElementById('loading-text');
-let dots = 0;
-setInterval(() => {
-  dots = (dots + 1) % 4;
-  loadingText.textContent = 'Загрузка' + '.'.repeat(dots);
-}, 500);
-
-// ======= СТАТУС ONLINE/OFFLINE =======
-function updateStatus() {
-  const hour = new Date().getHours();
-  const dot = document.getElementById('status-dot');
-  const text = document.getElementById('status-text');
-  if (hour >= 8 && hour < 22) {
-    dot.className = 'online';
-    text.textContent = 'online';
-    text.style.textTransform = 'none';
-  } else {
-    dot.className = 'offline';
-    text.textContent = 'offline';
-    text.style.textTransform = 'none';
-  }
-}
-updateStatus();
-setInterval(updateStatus, 60000);
-
-// ======= СООБЩЕНИЕ ПРИ КЛИКЕ НА СТАТУС =======
-let statusMsgOpen = false;
-let typewriterTimer = null;
-
-function toggleStatusMessage() {
-  const badge = document.getElementById('status-badge');
-  const msg = document.getElementById('status-message');
-  const hour = new Date().getHours();
-  const isOnline = hour >= 8 && hour < 22;
-
-  if (statusMsgOpen) {
-    msg.classList.remove('visible');
-    statusMsgOpen = false;
-    if (typewriterTimer) clearTimeout(typewriterTimer);
-    return;
-  }
-
-  // Позиционируем под бейджем по центру экрана
-  const rect = badge.getBoundingClientRect();
-  msg.style.top = (rect.bottom + 8) + 'px';
-  msg.style.left = '50%';
-  msg.textContent = '';
-  msg.classList.add('visible');
-  statusMsgOpen = true;
-
-  const text = isOnline
-    ? 'Утречко. Оно не неправильное. Оно просто есть'
-    : 'Скорее всего, сплю. Но могу и не спать. А, неважно';
-
-  let i = 0;
-  function typeNext() {
-    if (i < text.length) {
-      msg.textContent += text[i];
-      i++;
-      typewriterTimer = setTimeout(typeNext, 38 + Math.random() * 30);
-    }
-  }
-  typeNext();
-}
-
-</script>
 </body>
 </html>
