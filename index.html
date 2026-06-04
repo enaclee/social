@@ -31,10 +31,29 @@
     body::before {
       content: '';
       position: fixed;
-      inset: 0;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
       background: url('fon.png') center center / cover no-repeat;
-      z-index: -1;
+      z-index: -2;
+      transform: translateZ(0);
+      will-change: transform;
     }
+
+    /* Night overlay */
+    .night-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+      transform: translateZ(0);
+    }
+    .night-overlay.on { opacity: 1; }
 
     /* ── NAV ── */
     nav {
@@ -127,15 +146,16 @@
       font-weight: 400;
       letter-spacing: 0.08em;
       line-height: 1;
-      margin-bottom: 10px;
+      margin-bottom: 4px;
     }
 
     .handle {
       font-family: var(--mono);
       font-size: 0.92rem;
       letter-spacing: 0.22em;
-      margin-bottom: 20px;
-      opacity: 0.72;
+      margin-bottom: 18px;
+      color: #000000;
+      opacity: 1;
     }
 
     .tagline {
@@ -376,20 +396,49 @@
     .music-btn:hover { background: rgba(0,0,0,0.75); }
     .music-btn .music-icon { font-size: 0.85rem; }
 
+    /* ── NIGHT MODE BUTTON ── */
+    .night-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      padding: 7px 12px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .night-btn:hover { background: rgba(0,0,0,0.75); }
+    .night-btn .night-icon { font-size: 0.85rem; }
+
     /* ── FOOTER ── */
     footer {
       text-align: center;
-      padding: 28px 20px 34px;
+      padding: 20px 20px 28px;
       font-family: var(--mono);
-      font-size: 0.70rem;
-      letter-spacing: 0.18em;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
       color: #000000;
       opacity: 1;
-      line-height: 2;
+      line-height: 1.6;
+    }
+    footer div {
+      white-space: nowrap;
     }
   </style>
 </head>
 <body>
+
+  <!-- NIGHT OVERLAY -->
+  <div class="night-overlay" id="nightOverlay"></div>
 
   <!-- AUDIO -->
   <audio id="bgMusic" src="180db.mp3" loop preload="auto"></audio>
@@ -398,6 +447,12 @@
   <button class="music-btn" id="musicBtn" aria-label="Toggle music">
     <span class="music-icon">♪</span>
     <span id="musicLabel">PLAY</span>
+  </button>
+
+  <!-- NIGHT MODE BUTTON -->
+  <button class="night-btn" id="nightBtn" aria-label="Toggle night mode">
+    <span class="night-icon">🌙</span>
+    <span id="nightLabel">NIGHT</span>
   </button>
 
   <!-- NAV -->
@@ -507,6 +562,18 @@
   </footer>
 
   <script>
+    /* ── Night mode ── */
+    const nightBtn     = document.getElementById('nightBtn');
+    const nightOverlay = document.getElementById('nightOverlay');
+    const nightLabel   = document.getElementById('nightLabel');
+    let nightOn = false;
+
+    nightBtn.addEventListener('click', () => {
+      nightOn = !nightOn;
+      nightOverlay.classList.toggle('on', nightOn);
+      nightLabel.textContent = nightOn ? 'DAY' : 'NIGHT';
+    });
+
     /* ── Music player ── */
     const bgMusic   = document.getElementById('bgMusic');
     const musicBtn  = document.getElementById('musicBtn');
